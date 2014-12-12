@@ -502,10 +502,18 @@ int do_mount_all(int nargs, char **args)
     int status;
     const char *prop;
     struct fstab *fstab;
+    char prop_val[PROP_VALUE_MAX];
 
     if (nargs != 2) {
         return -1;
     }
+
+    ret = expand_props(prop_val, args[1], sizeof(prop_val));
+    if (ret) {
+        ERROR("cannot expand '%s'\n", args[1]);
+        return -EINVAL;
+    }
+    ERROR("mount_all: %s\n", prop_val);
 
     /*
      * Call fs_mgr_mount_all() to mount all filesystems.  We fork(2) and
@@ -530,7 +538,7 @@ int do_mount_all(int nargs, char **args)
     } else if (pid == 0) {
         /* child, call fs_mgr_mount_all() */
         klog_set_level(6);  /* So we can see what fs_mgr_mount_all() does */
-        fstab = fs_mgr_read_fstab(args[1]);
+        fstab = fs_mgr_read_fstab(prop_val);
         child_ret = fs_mgr_mount_all(fstab);
         fs_mgr_free_fstab(fstab);
         if (child_ret == -1) {
@@ -706,7 +714,22 @@ int do_trigger(int nargs, char **args)
 
 int do_symlink(int nargs, char **args)
 {
-    return symlink(args[1], args[2]);
+    char old[PROP_VALUE_MAX];
+    char new[PROP_VALUE_MAX];
+    int ret;
+
+    ret = expand_props(old, args[1], sizeof(old));
+    if (ret) {
+        ERROR("cannot expand '%s'\n", old);
+        return -EINVAL;
+    }
+    ret = expand_props(new, args[2], sizeof(new));
+    if (ret) {
+        ERROR("cannot expand '%s'\n", new);
+        return -EINVAL;
+    }
+
+    return symlink(old, new);
 }
 
 int do_rm(int nargs, char **args)
