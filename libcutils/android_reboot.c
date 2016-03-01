@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <cutils/android_reboot.h>
+#include <bootmode.h>
 
 #define UNUSED __attribute__((unused))
 
@@ -121,6 +122,7 @@ int android_reboot(int cmd, int flags UNUSED, char *arg)
             break;
 
         case ANDROID_RB_RESTART2:
+            set_device_bootmode(arg);
             ret = syscall(__NR_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2,
                            LINUX_REBOOT_CMD_RESTART2, arg);
             break;
