@@ -143,6 +143,9 @@ LOCAL_CFLAGS_x86_64 += -DHAVE_MEMSET16 -DHAVE_MEMSET32
 
 LOCAL_C_INCLUDES := $(libcutils_c_includes)
 LOCAL_C_INCLUDES += device/gateworks/ventana/bootloader
+LOCAL_C_INCLUDES += device/flowdata/ventana/bootloader
+LOCAL_C_INCLUDES += device/flowdata/qlogix/bootloader
+LOCAL_C_INCLUDES += device/flowdata/provue/bootloader
 LOCAL_WHOLE_STATIC_LIBRARIES := device_bootmode
 LOCAL_STATIC_LIBRARIES := liblog
 LOCAL_CFLAGS += $(targetSmpFlag) -Werror
